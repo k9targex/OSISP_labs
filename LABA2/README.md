@@ -7,18 +7,13 @@ This program is able to fork and run a child process speicfied with `CHILD_PATH`
 
 ### How to build this project
 
-This project can be built in release and debug modes using `make` utility. 
+This project can be built using `make` utility. 
 
 ```
 make 
 ```
 
-or
 
-```
-make MODE=debug
-make MODE=debug TARGET=child
-```
 
 ### How to use this program
 
