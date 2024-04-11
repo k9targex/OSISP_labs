@@ -16,7 +16,11 @@ make
 
 
 ### How to use this program
-
+## Example Usage
+To list all files and directories in the current directory:
+```
+./parent env.txt
+```
 Program can be controlled using following keys:
 
 * `+` to run child according to `getenv()`
