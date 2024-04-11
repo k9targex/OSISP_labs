@@ -2,7 +2,9 @@
 #define DIRWALK_H
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include <string.h>
 #include <limits.h>
 #include<getopt.h>

@@ -1,7 +1,5 @@
 #define _XOPEN_SOURCE 700
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
+
 #include "dirwalk.h"
 void print(const char *path, int symbolic_links, int directories, int files) {
     struct stat statbuf;
@@ -27,9 +25,6 @@ void print_usage() {
     printf("-f   Only files\n");
     printf("-s   Sort output by LC_COLLATE\n");
 }
-// int compare(const struct dirent **a, const struct dirent **b) {
-//     return strcoll((*a)->d_name, (*b)->d_name);
-// }
 int compare(const void *a, const void *b) {
     const struct dirent *entry_a = *(const struct dirent **)a;
     const struct dirent *entry_b = *(const struct dirent **)b;
