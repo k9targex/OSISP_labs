@@ -100,7 +100,7 @@ int main(int argc, char* argv[], char* envp[])
                 {
                     char* var_value = get_env_value(CHILD_PATH, environ);
                     if (var_value != NULL)
-                        execute_child(var_value, argv[1], "&", envp,&count);
+                        execute_child(var_value, argv[1], "&", environ,&count);
                     else
                         printf("\n'%s' environment variable not found\n", CHILD_PATH);
                     break;
