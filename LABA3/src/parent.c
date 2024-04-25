@@ -17,6 +17,12 @@
 
 void signal1_handler(int signo) {}
 void signal2_handler(int signo) {}
+void press_g(int signo) {
+    kill(0, SIGUSR2);
+    return;
+}
+
+
 int main(int argc, char** argv, char** envp)
 {
     if (argc < TRUE_NUMBER_OF_ARGUMENTS)
@@ -24,6 +30,8 @@ int main(int argc, char** argv, char** envp)
     
     signal(SIGUSR1, signal1_handler);
     signal(SIGUSR2, signal2_handler);
+    signal(SIGALRM, press_g);
+
 
     int child_count = 0;
     pid_t child_pids[CHILD_PROGS_SIZE];
@@ -97,7 +105,7 @@ int main(int argc, char** argv, char** envp)
                 if(child_count < atoi(input + 1))
                     puts("Child with this number are not exitst");
                 else
-                    kill(child_pids[atoi(input + 1) - 1], SIGUSR1);
+                    kill(child_pids[atoi(input + 1) ], SIGUSR1);
             }
             else
                 kill(0, SIGUSR1);
@@ -111,7 +119,7 @@ int main(int argc, char** argv, char** envp)
                 if(child_count < atoi(input + 1))
                     puts("Child with this number are not exitst");
                 else
-                    kill(child_pids[atoi(input + 1) - 1], SIGUSR2);
+                    kill(child_pids[atoi(input + 1) ], SIGUSR2);
             }
             else
                 kill(0, SIGUSR2);
@@ -120,21 +128,15 @@ int main(int argc, char** argv, char** envp)
         }
         case 'p':
         {
-            if (strlen(input) <= 1)
+          if (strlen(input) <= 1)
                 break;
 
             kill(0, SIGUSR1);
-            kill(child_pids[atoi(input + 1) - 1], SIGUSR2);
-
-            sleep(2);
-
-            kill(child_pids[atoi(input + 1) - 1], SIGUSR1);
-
-            sleep(5);
-            
-            kill(0, SIGUSR2);
+            kill(child_pids[atoi(input + 1) ], SIGUSR2);
+            alarm(5);
 
             break;
+
         }
         case 'q':
         {

@@ -11,9 +11,9 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-#define COUNT_OF_REPEATS 116
+#define COUNT_OF_REPEATS 200
 #define ARR_SIZE 4
-#define SEC_TIMER 16116
+#define SEC_TIMER 5000
 
 typedef struct pair 
 {
