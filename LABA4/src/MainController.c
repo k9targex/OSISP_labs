@@ -1,8 +1,10 @@
 
 #include "AllFunctions.h"
-
+#include <semaphore.h>
 int main(void) {
-    MessageQueue* queue = initSharedMemory();
+    sem_t *sem_prod = initSharedMemorySem(7777);
+    sem_t *sem_con = initSharedMemorySem(6666);
+    MessageQueue* queue = initSharedMemoryQueue();
 
     int arrProducer[512];
     static int producerCount = 0;
@@ -13,14 +15,12 @@ int main(void) {
     while(1) {
         char c = getchar();
         if(c == '1') {
-
-        pid_t pid = fork();
-    
-         if (pid == -1) {
-            perror("fork");
-            exit(EXIT_FAILURE);
+            pid_t pid = fork();
+            if (pid == -1) {
+                perror("fork");
+                exit(EXIT_FAILURE);
             } else if (pid == 0) {
-                messageProducer(queue);
+                messageProducer(queue, sem_prod);
             } else {
                 arrProducer[producerCount] = pid;
                 producerCount++;
@@ -34,14 +34,12 @@ int main(void) {
             producerCount = 0;
         }
         if(c == '3') {
-
-        pid_t pid = fork();
-    
-         if (pid == -1) {
-            perror("fork");
-            exit(EXIT_FAILURE);
+            pid_t pid = fork();
+            if (pid == -1) {
+                perror("fork");
+                exit(EXIT_FAILURE);
             } else if (pid == 0) {
-                messageConsumer(queue);
+                messageConsumer(queue, sem_con);
             } else {
                 arrConsumer[consumerCount] = pid;
                 consumerCount++;
@@ -49,25 +47,26 @@ int main(void) {
             }
         }
         if(c == '4') {
-           for (int i = 0; i < consumerCount; i++) {
+            for (int i = 0; i < consumerCount; i++) {
                 kill(arrConsumer[i], SIGTERM); 
             }  
             consumerCount = 0;
         }
         if(c == 's') {
-            printf("Producters: %d\n", producerCount);
-            printf("Consumers: %d\n", consumerCount);
+            printf("Count of producer processes: %d\n", producerCount);
+            printf("Count of consumer processes: %d\n", consumerCount);
         }
         if(c == 'q') {
             for (int i = 0; i < consumerCount; i++) {
                 kill(arrConsumer[i], SIGTERM); 
             }  
-             for (int i = 0; i < producerCount; i++) {
+            for (int i = 0; i < producerCount; i++) {
                 kill(arrProducer[i], SIGTERM); 
             } 
             break;
         }
     }
-    cleanupSharedMemory(queue);
+
+    cleanupSharedMemory(queue, sem_prod, sem_con);
     return 0;
 }

@@ -49,12 +49,19 @@ void generateRandomMessage(Message *message) {
 
 
 uint16_t hashCode(const Message *message) {
+    uint16_t sum1 = 0;
+    uint16_t sum2 = 0;
 
-    uint16_t hash = 17; 
-    hash = hash * 31 + message->type;
-    hash = hash * 31 + message->size;
+    sum1 = (sum1 + message->type) % 255;
+    sum2 = (sum2 + sum1) % 255;
+
+    sum1 = (sum1 + message->size) % 255;
+    sum2 = (sum2 + sum1) % 255;
+
     for (int i = 0; i < 10; i++) {
-        hash = hash * 31 + message->data[i];
+        sum1 = (sum1 + message->data[i]) % 255;
+        sum2 = (sum2 + sum1) % 255;
     }
-    return hash;
+
+    return (sum2 << 8) | sum1;
 }

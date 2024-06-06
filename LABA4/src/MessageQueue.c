@@ -1,50 +1,49 @@
 
 #include "AllFunctions.h"
 
-void initQueue(MessageQueue *queue) {
-    queue->head = 0;
-    queue->tail = 0;
-    queue->count_added = 0;
-    queue->count_extracted = 0;
-    pthread_mutex_init(&queue->mutex, NULL);
-}
 
 void push(MessageQueue *queue, Message *message) {
-    pthread_mutex_lock(&queue->mutex);
+    pthread_mutex_lock(&queue->mutex); 
     if ((queue->tail + 1) % MAX_QUEUE_SIZE == queue->head) {
         printf("queue is full!!!\n");
-        pthread_mutex_unlock(&queue->mutex);
+        pthread_mutex_unlock(&queue->mutex); 
         return;
     }
 
     queue->buffer[queue->tail] = message;
-
     queue->tail = (queue->tail + 1) % MAX_QUEUE_SIZE;
     queue->count_added++;
 
-    pthread_mutex_unlock(&queue->mutex);
-    printf("Queue add: message=%s, type=%d, hash=%d, size=%d, count added=%d, count extracted=%d\n", message->data, message->type, message->hash, message->size, queue->count_added, queue->count_extracted);
+    pthread_mutex_unlock(&queue->mutex); 
+    printf("Message added to the queue: message=%s, type=%d, hash=%d, size=%d, count added=%d, count extracted=%d\n", message->data, message->type, message->hash, message->size, queue->count_added, queue->count_extracted);
 }
 
 Message *pop(MessageQueue *queue) {
-    pthread_mutex_lock(&queue->mutex);
+    pthread_mutex_lock(&queue->mutex); 
 
     if (queue->head == queue->tail) {
 
         printf("queue is empty!!!\n");
-        pthread_mutex_unlock(&queue->mutex);
+        pthread_mutex_unlock(&queue->mutex); 
         return NULL;
     }
+
     Message *message = queue->buffer[queue->head];
     queue->head = (queue->head + 1) % MAX_QUEUE_SIZE;
     queue->count_extracted++;
-    pthread_mutex_unlock(&queue->mutex);
-    printf("Queue delete: message=%s, type=%d, hash=%d, count added=%d, count extracted=%d\n", message->data, message->type, message->hash, queue->count_added, queue->count_extracted);
+
+    pthread_mutex_unlock(&queue->mutex); 
+    // printf("Message added to the queue: message=%s, type=%d, hash=%d, size=%d, count added=%d, count extracted=%d\n", message->data, message->type, message->hash, message->size, queue->count_added, queue->count_extracted);
+
+    printf("Message deleted to the queue: type=%d, count added=%d, count extracted=%d\n", message->type, queue->count_added, queue->count_extracted);
     return message;
 }
 
 void generateRandomMessage(Message *message) {
+
+
     message->type = rand() % 256;
+
     message->hash = hashCode(message);
 
     for (int i = 0; i < 10; i++) {
@@ -54,12 +53,19 @@ void generateRandomMessage(Message *message) {
 
 
 uint16_t hashCode(const Message *message) {
+    uint16_t sum1 = 0;
+    uint16_t sum2 = 0;
 
-    uint16_t hash = 17;
-    hash = hash * 31 + message->type;
-    hash = hash * 31 + message->size;
+    sum1 = (sum1 + message->type) % 255;
+    sum2 = (sum2 + sum1) % 255;
+
+    sum1 = (sum1 + message->size) % 255;
+    sum2 = (sum2 + sum1) % 255;
+
     for (int i = 0; i < 10; i++) {
-        hash = hash * 31 + message->data[i];
+        sum1 = (sum1 + message->data[i]) % 255;
+        sum2 = (sum2 + sum1) % 255;
     }
-    return hash;
+
+    return (sum2 << 8) | sum1;
 }

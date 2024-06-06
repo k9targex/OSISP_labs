@@ -11,7 +11,7 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <signal.h> 
-
+#include <semaphore.h>
 #define MAX_QUEUE_SIZE 5 
 #define SHARED_MEMORY_KEY 8888
 #define MAX_SEM_COUNT 10
@@ -33,7 +33,6 @@ typedef struct {
 
 } MessageQueue;
 
-void initQueue(MessageQueue *queue);
 
 void push(MessageQueue *queue, Message *message);
 
@@ -43,10 +42,8 @@ void generateRandomMessage(Message* message);
 
 uint16_t hashCode(const Message *message);
 
-MessageQueue *initSharedMemory(void);
-
-void cleanupSharedMemory(MessageQueue *queue);
-
-void messageProducer(void *arg);
-
-void messageConsumer(void *arg);
+sem_t* initSharedMemorySem(int key);
+MessageQueue* initSharedMemoryQueue(void);
+void cleanupSharedMemory(MessageQueue *queue, sem_t *sem_prod, sem_t *sem_con);
+void messageProducer(MessageQueue *queue, sem_t *sem);
+void messageConsumer(MessageQueue *queue, sem_t *sem);
